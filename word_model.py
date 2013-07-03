@@ -7,8 +7,7 @@ import nltk
 class WordModel:
 
     def __init__(self, stream):
-        self.input = stream 
-        self.text = self._set_text()
+        self.text = self._set_text(stream)
         self.gram_sizes = [1, 2, 3]
         self.model = collections.Counter()
         self._generate_model()
@@ -34,9 +33,8 @@ class WordModel:
         indexes = xrange(len(ls) + n - 1)
         return ( tuple(decorated_ls[i:i+n]) for i in indexes )
 
-    def _set_text(self):
-        lines = [ line.strip() for line in self.input ]
-        return ' '.join(lines)
+    def _set_text(self, stream):
+        return ' '.join( line.strip() for line in stream )
 
 if __name__ == '__main__':
-    model = WordModel(sys.stdin) 
+    model = WordModel(sys.stdin)
