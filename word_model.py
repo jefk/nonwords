@@ -11,11 +11,18 @@ class WordModel:
 
     def __init__(self, stream):
         self.text = self._set_text(stream)
-        self.model = collections.Counter()
+        self.counts = collections.Counter()
+        self.distributions = collections.defaultdict(collections.Counter)
         self._generate_model()
 
     def all_words(self):
         return nltk.tokenize.wordpunct_tokenize(self.text)
+
+    def count(self, gram):
+        return self.counts[gram]
+
+    def distribution(self, gram):
+        return self.distributions[gram].iteritems()
 
     def filtered_words(self):
         return ( word for word in self.all_words() if len(word) > 3 )
@@ -24,7 +31,7 @@ class WordModel:
         for word in self.filtered_words():
             chars = list(word)
             for gram in self._all_grams(chars):
-                self.model[gram] += 1
+                self._increment(gram)
 
     def _all_grams(self, ls):
         flattenable = ( self._golden_grams(ls, size) for size in self.GRAM_SIZES )
@@ -35,8 +42,11 @@ class WordModel:
         indexes = xrange(len(ls) + n - 1)
         return ( tuple(decorated_ls[i:i+n]) for i in indexes )
 
+    def _increment(self, gram):
+        self.counts[gram] += 1
+
+        head, tail = gram[:-1], gram[-1:]
+        self.distributions[head][tail] += 1
+
     def _set_text(self, stream):
         return ' '.join( line.strip() for line in stream )
-
-if __name__ == '__main__':
-    print 'word model main'
