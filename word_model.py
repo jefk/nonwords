@@ -29,9 +29,10 @@ class WordModel:
 
     def _generate_model(self):
         for word in self.filtered_words():
+            self._increment_word_counts()
             chars = list(word)
             for gram in self._all_grams(chars):
-                self._increment(gram)
+                self._increment_gram(gram)
 
     def _all_grams(self, ls):
         flattenable = ( self._golden_grams(ls, size) for size in self.GRAM_SIZES )
@@ -42,11 +43,16 @@ class WordModel:
         indexes = xrange(len(ls) + n - 1)
         return ( tuple(decorated_ls[i:i+n]) for i in indexes )
 
-    def _increment(self, gram):
+    def _increment_gram(self, gram):
         self.counts[gram] += 1
 
         head, tail = gram[:-1], gram[-1:]
         self.distributions[head][tail] += 1
+
+    def _increment_word_counts(self):
+        for size in self.GRAM_SIZES:
+            gram = tuple([self.BEGIN_TOKEN] * (size-1))
+            self.counts[gram] += 1
 
     def _set_text(self, stream):
         return ' '.join( line.strip() for line in stream )
