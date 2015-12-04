@@ -1,6 +1,5 @@
 
 import sys
-import word_model
 import random
 
 class Generator:
@@ -47,10 +46,3 @@ class Generator:
         decorated_things = [self.model.BEGIN_TOKEN] * (self._max_gram_size-1) + self.things
         return tuple(decorated_things[-1*(self._max_gram_size-1):])
 
-if __name__ == '__main__':
-    # TODO add some argument parser
-    text = open(sys.argv[1])
-    model = word_model.WordModel(text)
-    generator = Generator(model)
-
-    print ''.join(generator.generate())
